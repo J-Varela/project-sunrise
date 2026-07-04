@@ -48,12 +48,26 @@ def build_mission_data(orbit_points: list[dict]) -> dict:
                 "region": "Lunar South Pole",
                 "priority": "High",
                 "risk": "Extreme cold, darkness, rough terrain",
+                "risk_scores": {
+                    "darkness": 95,
+                    "cold": 98,
+                    "terrain": 82,
+                    "communication": 70,
+                    "ice_probability": 85,
+                },
             },
             {
                 "name": "Cabeus Crater",
                 "region": "Lunar South Pole",
                 "priority": "Medium",
                 "risk": "Possible ice deposits, communication difficulty",
+                "risk_scores": {
+                    "darkness": 88,
+                    "cold": 92,
+                    "terrain": 76,
+                    "communication": 78,
+                    "ice_probability": 80,
+                },
             },
         ],
 
