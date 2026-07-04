@@ -43,33 +43,45 @@ def build_mission_data(orbit_points: list[dict]) -> dict:
             "surface explorers enter them."
         ),
         "target_regions": [
-            {
-                "name": "Shackleton Crater",
-                "region": "Lunar South Pole",
-                "priority": "High",
-                "risk": "Extreme cold, darkness, rough terrain",
-                "risk_scores": {
-                    "darkness": 95,
-                    "cold": 98,
-                    "terrain": 82,
-                    "communication": 70,
-                    "ice_probability": 85,
-                },
-            },
-            {
-                "name": "Cabeus Crater",
-                "region": "Lunar South Pole",
-                "priority": "Medium",
-                "risk": "Possible ice deposits, communication difficulty",
-                "risk_scores": {
-                    "darkness": 88,
-                    "cold": 92,
-                    "terrain": 76,
-                    "communication": 78,
-                    "ice_probability": 80,
-                },
-            },
-        ],
+    {
+        "name": "Shackleton Crater",
+        "region": "Lunar South Pole",
+        "priority": "High",
+        "risk": "Extreme cold, darkness, rough terrain",
+        "coverage": {
+            "mapped_percent": 42,
+            "passes_completed": 3,
+            "passes_required": 8,
+            "status": "In Progress",
+        },
+        "risk_scores": {
+            "darkness": 95,
+            "cold": 98,
+            "terrain": 82,
+            "communication": 70,
+            "ice_probability": 85,
+        },
+    },
+    {
+        "name": "Cabeus Crater",
+        "region": "Lunar South Pole",
+        "priority": "Medium",
+        "risk": "Possible ice deposits, communication difficulty",
+        "coverage": {
+            "mapped_percent": 25,
+            "passes_completed": 2,
+            "passes_required": 8,
+            "status": "Early Scan",
+        },
+        "risk_scores": {
+            "darkness": 88,
+            "cold": 92,
+            "terrain": 76,
+            "communication": 78,
+            "ice_probability": 80,
+        },
+    },
+],
 
         "mission_timeline": [
             {
