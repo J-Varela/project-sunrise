@@ -56,6 +56,30 @@ def build_mission_data(orbit_points: list[dict]) -> dict:
                 "risk": "Possible ice deposits, communication difficulty",
             },
         ],
+
+        "mission_timeline": [
+            {
+                "phase": "Launch",
+                "status": "Planned",
+                "description": "Spacecraft begins the mission and prepares for lunar transfer.",
+            },
+            {
+                "phase": "Lunar Orbit Insertion",
+                "status": "Planned",
+                "description": "Sunrise Mapper 1 enters orbit around the Moon.",
+            },
+            {
+                "phase": "Mapping Pass",
+                "status": "Simulating",
+                "description": "Orbiter scans the lunar south pole and builds a terrain-risk map.",
+            },
+            {
+                "phase": "Crater Risk Scan",
+                "status": "Pending",
+                "description": "Target craters are analyzed for darkness, temperature, terrain, and communication risk.",
+            },
+        ],
+
         "orbit_points": orbit_points,
     }
 
