@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -16,13 +17,35 @@ def save_mission_data(mission_data: dict) -> None:
         json.dump(mission_data, file, indent=2)
 
 
-def update_coverage(target: dict) -> dict:
+def create_event(event_type: str, message: str, target_name: str | None = None) -> dict:
+    return {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "event_type": event_type,
+        "target_name": target_name,
+        "message": message,
+    }
+
+
+def update_coverage(target: dict) -> tuple[dict, list[dict]]:
+    events = []
     coverage = target["coverage"]
+    target_name = target["name"]
+
+    previous_percent = coverage["mapped_percent"]
 
     if coverage["mapped_percent"] >= 100:
         coverage["mapped_percent"] = 100
         coverage["status"] = "Complete"
-        return target
+
+        events.append(
+            create_event(
+                "coverage_complete",
+                f"{target_name} is already fully mapped.",
+                target_name,
+            )
+        )
+
+        return target, events
 
     coverage["passes_completed"] += 1
 
@@ -38,11 +61,26 @@ def update_coverage(target: dict) -> dict:
     else:
         coverage["status"] = "In Progress"
 
-    return target
+    events.append(
+        create_event(
+            "scan_pass",
+            (
+                f"Scan pass completed over {target_name}. "
+                f"Coverage increased from {previous_percent}% "
+                f"to {coverage['mapped_percent']}%."
+            ),
+            target_name,
+        )
+    )
+
+    return target, events
 
 
-def update_mission_status(mission_data: dict) -> dict:
+def update_mission_status(mission_data: dict) -> tuple[dict, list[dict]]:
+    events = []
     targets = mission_data["target_regions"]
+
+    previous_status = mission_data["spacecraft"]["status"]
 
     completed_targets = [
         target
@@ -55,17 +93,40 @@ def update_mission_status(mission_data: dict) -> dict:
     else:
         mission_data["spacecraft"]["status"] = "Simulating"
 
-    return mission_data
+    new_status = mission_data["spacecraft"]["status"]
+
+    if new_status != previous_status:
+        events.append(
+            create_event(
+                "mission_status",
+                f"Mission status changed from {previous_status} to {new_status}.",
+            )
+        )
+
+    return mission_data, events
 
 
 def main() -> None:
     mission_data = load_mission_data()
 
-    mission_data["target_regions"] = [
-        update_coverage(target) for target in mission_data["target_regions"]
-    ]
+    mission_data.setdefault("event_log", [])
 
-    mission_data = update_mission_status(mission_data)
+    updated_targets = []
+    new_events = []
+
+    for target in mission_data["target_regions"]:
+        updated_target, target_events = update_coverage(target)
+        updated_targets.append(updated_target)
+        new_events.extend(target_events)
+
+    mission_data["target_regions"] = updated_targets
+
+    mission_data, status_events = update_mission_status(mission_data)
+    new_events.extend(status_events)
+
+    mission_data["event_log"] = new_events + mission_data["event_log"]
+    mission_data["event_log"] = mission_data["event_log"][:20]
+
     save_mission_data(mission_data)
 
     print("Completed one simulated scan pass.")
@@ -78,6 +139,8 @@ def main() -> None:
             f"{coverage['mapped_percent']}% mapped "
             f"({coverage['passes_completed']}/{coverage['passes_required']} passes)"
         )
+
+    print(f"Logged {len(new_events)} new mission events.")
 
 
 if __name__ == "__main__":
